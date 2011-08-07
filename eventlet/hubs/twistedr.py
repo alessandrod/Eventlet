@@ -247,9 +247,13 @@ class TwistedHub(BaseTwistedHub):
         while reactor.running:
             # Advance simulation time in delayed event processors.
             reactor.runUntilCurrent()
-            t2 = reactor.timeout()
-            t = reactor.running and t2
-            reactor.doIteration(t)
+            if reactor.running:
+                timeout = reactor.timeout()
+                if timeout is None:
+                    timeout = 0.1
+            else:
+                timeout = 0
+            reactor.doIteration(timeout)
 
 Hub = TwistedHub
 
